@@ -1,0 +1,92 @@
+﻿@model StatementIndexView
+@{
+    ViewData["Title"] = "Список заявлений";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<br />
+
+<button class="btn btn-info" type="button" data-toggle="collapse" data-target="#filtration" aria-expanded="false" aria-controls="filtration">
+    Фильтрация
+</button>
+
+<div class="collapse multi-collapse" id="filtration">
+@using (Html.BeginForm("Index", "Statement", FormMethod.Get))
+{
+    <div class="form-row align-items-baseline">
+        <div class="col-auto">
+            <label>С</label>
+            @Html.TextBoxFor(
+            model => model.Filter.BeginDate,
+            new { @type = "date", @class = "form-control" })
+        </div>
+        <div class="col-auto">
+            <label>По</label>
+            @Html.TextBoxFor(
+            model => model.Filter.EndDate,
+            new { @type = "date", @class = "form-control" })
+        </div>
+        <div class="col-auto">
+            <label>Состояние</label>
+            @Html.DropDownListFor(x => x.Filter.StatusCode,
+            new SelectList(Model.Filter.StatusItems, "Value", "Text"),
+            new { @class = "form-control" })
+        </div>
+        <div class="col-auto">
+            <label>Сортировать по</label>
+            @Html.DropDownListFor(x => x.Filter.Order,
+            new SelectList(Model.Filter.OrderItems, "Value", "Text"),
+            new { @class = "form-control" })
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-sync"></i>
+            </button>
+        </div>
+    </div>
+}
+</div>
+
+<br />
+<br />
+
+@Html.ActionLink("Создать заявление", "Create", new { }, new { @class = "btn btn-primary" })
+<br />
+<br />
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Дата создания</th>
+            <th>Дата изменения</th>
+            <th>Наименование</th>
+            <th>Статус</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var statement in Model.Statements)
+        {
+            <tr>
+                <td>@statement.CreateDate</td>
+                <td>@statement.EditDate</td>
+                <td>@statement.StatementTitle</td>
+                <td>@await Component.InvokeAsync("StatusCodeSpan", new { statusCode = statement.CurrentStatus.StatusCode })</td>
+                <td>
+                    @Html.ActionLink(
+             "Подробнее",
+             "Edit",
+             new { id = statement.StatementId },
+             new { @class = "btn btn-primary" })
+                    @Html.ActionLink(
+             "Удалить",
+             "Delete",
+             new { id = statement.StatementId },
+             new { @class = "btn btn-danger" })
+                </td>
+            </tr>
+
+        }
+    </tbody>
+</table>
+

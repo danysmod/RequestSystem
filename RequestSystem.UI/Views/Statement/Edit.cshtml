@@ -1,0 +1,63 @@
+﻿@model StatementModel
+@{
+    ViewData["Title"] = $"Заявление {Model.StatementId.ToString().Substring(0, 8)}";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@Html.ActionLink("Назад", "Index", "Statement", null, new {@class="btn btn-primary" })
+
+<br />
+<br />
+
+@using (Html.BeginForm("Edit", "Statement", FormMethod.Post))
+{
+    @Html.HiddenFor(s => s.StatementId)
+    <table class="table table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <td>Дата создания</td>
+                <td>Дата изменения</td>
+                <td>Наименование</td>
+                <td>Состояние</td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Model.CreateDate</td>
+                <td>@Model.EditDate</td>
+                <td>@Html.TextBoxFor(x => x.StatementTitle, new { @class = "form-control-plaintext" })</td>
+                <td>@await Component.InvokeAsync("StatusCodeSpan", new { statusCode = Model.CurrentStatus.StatusCode })</td>
+            </tr>
+        </tbody>
+    </table>
+    <button type="submit" class="btn btn-success">Сохранить</button>
+    @Html.ActionLink("Удалить", "Delete", new { id = Model.StatementId }, new { @class = "btn btn-danger" })
+    @if(Model.CurrentStatus.StatusCode != 3)
+    {
+        @Html.ActionLink("Изменить статус", "ChangeStatus", "Status", new { id = Model.StatementId }, new { @class = "btn btn-primary float-right" })
+    }
+}
+
+<br />
+<br />
+
+<h3>История изменений статуса</h3>
+<table class="table table-bordered">
+    <thead class="thead-dark">
+        <tr>
+            <td>Дата создания</td>
+            <td>Состояние</td>
+            <td>Комментарий</td>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var status in Model.StatusHistory)
+        {
+            <tr>
+                <td>@status.CreateDate</td>
+                <td>@await Component.InvokeAsync("StatusCodeSpan", new { statusCode = status.StatusCode })</td>
+                <td>@status.Comment</td>
+            </tr>
+        }
+    </tbody>
+</table>

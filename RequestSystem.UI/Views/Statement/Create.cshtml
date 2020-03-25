@@ -1,0 +1,27 @@
+﻿@model StatementModel
+@{
+    ViewData["Title"] = $"Новое заявление";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Новое заяление</h1>
+
+<br />
+
+@using (Html.BeginForm())
+{
+    <div class="form-horizontal">
+        <div class="form-group">
+            <span>Наименование</span>
+            <div class="col-md-10">
+                @Html.TextBoxFor(x => x.StatementTitle, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="btn btn-primary">Создать</button>
+                @Html.ActionLink("Отмена", "Index", "Statement", null, new { @class = "btn btn-danger" })
+            </div>
+        </div>
+    </div>
+}
